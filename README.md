@@ -1,4 +1,4 @@
-RFID Student Attendance System
+
 Welcome to the RFID Student Attendance System project! This repository contains the code and resources for implementing a streamlined and efficient attendance tracking system using RFID (Radio-Frequency Identification) technology.
 
 Overview
