@@ -1,0 +1,84 @@
+#include <LiquidCrystal_I2C.h>
+#include <SPI.h>
+#include <MFRC522.h>
+
+#define RST_PIN 9
+#define SS_PIN  10
+byte readCard[4];
+byte a = 0;
+
+LiquidCrystal_I2C lcd(0x27, 16, 2); // Adjust the LCD dimensions as needed
+MFRC522 mfrc522(SS_PIN, RST_PIN);
+
+// Define mappings between UID and strings
+struct CardMapping {
+  byte uid[4];
+  const char* name;
+};
+
+CardMapping cardMappings[] = {
+  {{0xD3, 0xF0, 0x60, 0xF6}, "Dhananjay"},                               //your card id and name you want to store
+  {{0x93,0x20,0x53,0xc5},"Shubham"} // Updated mapping                   //your card id and name you want to store
+  // Add more mappings as needed
+};
+
+void setup() {
+  Serial.begin(115200);
+  lcd.init(); // Initialize the LCD (no need for begin())
+  lcd.backlight();
+  while (!Serial);
+  SPI.begin();
+  mfrc522.PCD_Init();
+  delay(4);
+  mfrc522.PCD_DumpVersionToSerial();
+  lcd.setCursor(2, 0);
+  lcd.print("Put your card");
+}
+
+void loop() {
+  if (!mfrc522.PICC_IsNewCardPresent()) {
+    return;
+  }
+  if (!mfrc522.PICC_ReadCardSerial()) {
+    return;
+  }
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Scanned UID");
+
+  Serial.print("Scanned PICC's UID: ");
+  for (uint8_t i = 0; i < 4; i++) {
+    readCard[i] = mfrc522.uid.uidByte[i];
+    Serial.print(readCard[i], HEX);
+    Serial.print(" ");
+  }
+  Serial.println();
+
+  // Match scanned UID to a name
+  const char* cardName = "Unknown";
+  for (size_t i = 0; i < sizeof(cardMappings) / sizeof(cardMappings[0]); i++) {
+    bool match = true;
+    for (size_t j = 0; j < 4; j++) {
+      if (readCard[j] != cardMappings[i].uid[j]) {
+        match = false;
+        break;
+      }
+    }
+    if (match) {
+      cardName = cardMappings[i].name;
+      break;
+    }
+  }
+
+  Serial.print("Scanned PICC's Name: ");
+  Serial.println(cardName);
+
+  lcd.setCursor(0, 1);
+  lcd.print(cardName);
+
+  delay(2000); // Display the name for 2 seconds
+ lcd.clear();
+  
+  mfrc522.PICC_HaltA();
+}
