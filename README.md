@@ -17,7 +17,7 @@ Libraries and Frameworks: List any specific libraries or frameworks used in the 
 Getting Started
 To get started with the RFID Student Attendance System, please refer to the detailed setup and installation instructions in the Installation Guide section.
 
-Contributions
+Contributions:
 Contributions to the project are welcome! If you have any suggestions, bug reports, or feature requests, please open an issue or submit a pull request.
 
 Thank you for your interest in the RFID Student Attendance System. We hope this project helps in creating a more efficient and reliable attendance tracking process for educational institutions.
